@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:14.1-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./dbscripts/postgres.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+#  mysql:
+#    image: mysql:oracle
+#    command: mysqld --user=root
+#    volumes:
+#      - ./dbscripts/mysql.sql:/docker-entrypoint-initdb.d/init.sql
+#    ports:
+#      - 3306:3306
+#    environment:
+#      - MYSQL_DATABASE=testdb
+#      - MYSQL_USER=user
+#      - MYSQL_PASSWORD=password
+#      - MYSQL_ROOT_PASSWORD=root
+#    healthcheck:
+#      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+#      timeout: 5s
+#      retries: 10
