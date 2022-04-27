@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/garixx/workshop-app/internal/config"
-	"github.com/garixx/workshop-app/internal/repository"
+	repository "github.com/garixx/workshop-app/internal/user/repository/postgres"
+	"github.com/garixx/workshop-app/internal/user/usecase"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -19,14 +21,15 @@ func main() {
 		logrus.Fatalf("config parsing failed:%s", err.Error())
 	}
 
-	db, err := repository.NewPostgresDB(config.GetPostgresDBConfig())
+	pool, err := repository.NewPostgresDB(config.GetPostgresDBConfig())
 	if err != nil {
 		logrus.Fatalf("connect to DB failed:%s", err.Error())
 	}
-	defer db.Close()
+	defer pool.Close()
 
-	repo := repository.NewRepository(db)
-	
+	repo := repository.NewPostgresUserRepository(pool)
+	useCase := usecase.NewUserUsecase(repo)
+
 }
 
 func initConfig() error {
@@ -34,6 +37,7 @@ func initConfig() error {
 	_ = viper.BindEnv("environment")
 	viper.SetDefault("environment", "QA")
 
-	viper.SetConfigFile(`./configs/` + strings.ToLower(viper.GetString("environment")) + `/config.yml`)
+	path := fmt.Sprintf("./configs/%s/config.yml", strings.ToLower(viper.GetString("environment")))
+	viper.SetConfigFile(path)
 	return viper.ReadInConfig()
 }

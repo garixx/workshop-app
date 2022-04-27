@@ -11,3 +11,13 @@ type User struct {
 }
 
 type NilUser User
+
+type UserUsecase interface {
+	CreateUser(user User) (User, error)
+	GetUser(username string, password string) (User, error)
+}
+
+type UserRepository interface {
+	CreateUser(user User) (User, error)
+	GetUser(username string, password string) (User, error)
+}
