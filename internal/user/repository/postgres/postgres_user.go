@@ -37,26 +37,6 @@ func NewPostgresUserRepository(pool *pgxpool.Pool) *PostgresUserRepository {
 	return &PostgresUserRepository{pool: pool}
 }
 
-//
-//func (a *PostgresUserRepository) CreateUser(user domain.User) (domain.User, error) {
-//	var id int
-//	var login string
-//	var username string
-//	var createdAt time.Time
-//	query := fmt.Sprintf("INSERT INTO %s (login, username, password_hash) VALUES ($1, $2, $3) RETURNING id, login, username, created_at", usersTable)
-//	row := a.pool.QueryRow(context.Background(), query, user.Login, user.Username, user.PasswordHash)
-//	if err := row.Scan(&id, &login, &username, &createdAt); err != nil {
-//		return domain.User{}, err
-//	}
-//
-//	return domain.User{
-//		Id:        id,
-//		Login:     login,
-//		Username:  username,
-//		CreatedAt: createdAt,
-//	}, nil
-//}
-
 func (a *PostgresUserRepository) CreateUser(user domain.User) (domain.User, error) {
 	var newUser domain.User
 	query := fmt.Sprintf("INSERT INTO %s (login, username, password_hash) VALUES ($1, $2, $3) RETURNING id, login, username, created_at", usersTable)
