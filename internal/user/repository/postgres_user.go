@@ -40,7 +40,7 @@ func NewPostgresUserRepository(pool *pgxpool.Pool) *PostgresUserRepository {
 func (a *PostgresUserRepository) CreateUser(user domain.User) (domain.User, error) {
 	var newUser domain.User
 	query := fmt.Sprintf("INSERT INTO %s (login, username, password_hash) VALUES ($1, $2, $3) RETURNING id, login, username, created_at", usersTable)
-	row := a.pool.QueryRow(context.Background(), query, user.Login, user.Username, user.PasswordHash)
+	row := a.pool.QueryRow(context.Background(), query, user.Login, user.Username, user.Password)
 	if err := row.Scan(&newUser.Id, &newUser.Login, &newUser.Username, &newUser.CreatedAt); err != nil {
 		return domain.User{}, err
 	}
@@ -48,9 +48,9 @@ func (a *PostgresUserRepository) CreateUser(user domain.User) (domain.User, erro
 	return newUser, nil
 }
 
-func (a *PostgresUserRepository) GetUser(username string, password string) (domain.User, error) {
+func (a *PostgresUserRepository) GetUser(user domain.User) (domain.User, error) {
 	var users []*domain.User
-	err := pgxscan.Select(context.Background(), a.pool, &users, "select * from users where login = $1 and password_hash = $2", username, password)
+	err := pgxscan.Select(context.Background(), a.pool, &users, "select login from users where login = $1 and password_hash = $2", user.Login, user.Password)
 	if err != nil {
 		return domain.User{}, err
 	}

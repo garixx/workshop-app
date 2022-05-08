@@ -2,9 +2,14 @@ package main
 
 import (
 	"fmt"
+	tokenRepo "github.com/garixx/workshop-app/internal/authtoken/repository"
+	tokenCase "github.com/garixx/workshop-app/internal/authtoken/usecase"
 	"github.com/garixx/workshop-app/internal/config"
-	repository "github.com/garixx/workshop-app/internal/user/repository/postgres"
-	"github.com/garixx/workshop-app/internal/user/usecase"
+	"github.com/garixx/workshop-app/internal/delivery"
+	"github.com/garixx/workshop-app/internal/inventory"
+	"github.com/garixx/workshop-app/internal/user/repository"
+	userRepo "github.com/garixx/workshop-app/internal/user/repository"
+	userCase "github.com/garixx/workshop-app/internal/user/usecase"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -27,9 +32,26 @@ func main() {
 	}
 	defer pool.Close()
 
-	repo := repository.NewPostgresUserRepository(pool)
-	useCase := usecase.NewUserUsecase(repo)
+	userRepository := userRepo.NewPostgresUserRepository(pool)
+	userUseCase := userCase.NewUserUsecase(userRepository)
 
+	authTokenRepository := tokenRepo.NewPostgresAuthTokenRepository(pool)
+	tokenUseCase := tokenCase.NewAuthTokenUsecase(authTokenRepository)
+
+	i := inventory.NewInventory(
+		userUseCase,
+		tokenUseCase,
+	)
+
+	//i1 := inventory.Inventory{
+	//	User: userCase.NewUserUsecase(userRepository),
+	//	AuthToken: tokenCase.NewAuthTokenUsecase(authTokenRepository),
+	//}
+
+	err = delivery.RestFrontEnd{}.Start(*i)
+	if err != nil {
+		logrus.Fatalf("server start failed:%s", err.Error())
+	}
 }
 
 func initConfig() error {
