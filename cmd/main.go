@@ -6,7 +6,7 @@ import (
 	tokenCase "github.com/garixx/workshop-app/internal/authtoken/usecase"
 	"github.com/garixx/workshop-app/internal/config"
 	"github.com/garixx/workshop-app/internal/database"
-	"github.com/garixx/workshop-app/internal/delivery"
+	"github.com/garixx/workshop-app/internal/http"
 	"github.com/garixx/workshop-app/internal/inventory"
 	userRepo "github.com/garixx/workshop-app/internal/user/repository"
 	userCase "github.com/garixx/workshop-app/internal/user/usecase"
@@ -33,17 +33,14 @@ func main() {
 	defer pool.Close()
 
 	userRepository := userRepo.NewPostgresUserRepository(pool)
-	userUseCase := userCase.NewUserUsecase(userRepository)
-
 	authTokenRepository := tokenRepo.NewPostgresAuthTokenRepository(pool)
-	tokenUseCase := tokenCase.NewAuthTokenUsecase(authTokenRepository)
 
 	i := inventory.NewInventory(
-		userUseCase,
-		tokenUseCase,
+		userCase.NewUserUsecase(userRepository),
+		tokenCase.NewAuthTokenUsecase(authTokenRepository),
 	)
 
-	err = delivery.RestFrontEnd{}.Start(*i)
+	err = http.RestFrontEnd{}.Start(*i)
 	if err != nil {
 		logrus.Fatalf("server start failed:%s", err.Error())
 	}

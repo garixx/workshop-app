@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/garixx/workshop-app/internal/domain"
-	"github.com/garixx/workshop-app/internal/domain/mocks"
+	"github.com/garixx/workshop-app/internal/models"
+	"github.com/garixx/workshop-app/internal/models/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -12,13 +12,13 @@ import (
 func TestAuthTokenUsecase_IsExpired(t *testing.T) {
 	tests := []struct {
 		name  string
-		token domain.AuthToken
+		token models.AuthToken
 		wait  time.Duration
 		want  bool
 	}{
-		{name: "current time is before expiredIn time", token: domain.AuthToken{CreatedAt: time.Now(), ExpiredIn: 10}, wait: 1 * time.Second, want: false},
-		{name: "current time is after expiredIn time", token: domain.AuthToken{CreatedAt: time.Now(), ExpiredIn: 1}, wait: 2 * time.Second, want: true},
-		{name: "current time is same as expiredIn time", token: domain.AuthToken{CreatedAt: time.Now(), ExpiredIn: 1}, wait: 1 * time.Second, want: true},
+		{name: "current time is before expiredIn time", token: models.AuthToken{CreatedAt: time.Now(), ExpiredIn: 10}, wait: 1 * time.Second, want: false},
+		{name: "current time is after expiredIn time", token: models.AuthToken{CreatedAt: time.Now(), ExpiredIn: 1}, wait: 2 * time.Second, want: true},
+		{name: "current time is same as expiredIn time", token: models.AuthToken{CreatedAt: time.Now(), ExpiredIn: 1}, wait: 1 * time.Second, want: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -37,7 +37,7 @@ func TestAuthTokenUsecase_IsExpired(t *testing.T) {
 func TestFetch(t *testing.T) {
 	mockTokenRepo := mocks.NewAuthTokenRepository(t)
 
-	expected := domain.AuthToken{
+	expected := models.AuthToken{
 		Login:     "me",
 		Token:     "mocktokene5w6",
 		CreatedAt: time.Now(),
@@ -56,17 +56,17 @@ func TestFetch(t *testing.T) {
 func TestStore(t *testing.T) {
 	mockTokenRepo := mocks.NewAuthTokenRepository(t)
 
-	payload := domain.AuthTokenParams{
-		User: domain.User{
+	payload := models.AuthTokenParams{
+		User: models.User{
 			Login: "aaa",
 		},
-		Token: domain.AuthToken{
+		Token: models.AuthToken{
 			Token: "xxx",
 		},
 		ExpireIn: 10,
 	}
 
-	expected := domain.AuthToken{
+	expected := models.AuthToken{
 		Login:     "aaa",
 		Token:     "aaaxxx",
 		CreatedAt: time.Now(),

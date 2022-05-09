@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	domain "github.com/garixx/workshop-app/internal/domain"
+	domain "github.com/garixx/workshop-app/internal/models"
 	mock "github.com/stretchr/testify/mock"
 
 	testing "testing"

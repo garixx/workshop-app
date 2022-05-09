@@ -1,4 +1,4 @@
-package helper
+package hashgenerator
 
 import (
 	"crypto/sha1"

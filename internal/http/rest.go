@@ -1,4 +1,4 @@
-package delivery
+package http
 
 import (
 	"context"
@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/garixx/workshop-app/internal/authtoken/repository"
-	"github.com/garixx/workshop-app/internal/domain"
 	"github.com/garixx/workshop-app/internal/inventory"
+	"github.com/garixx/workshop-app/internal/models"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"log"
@@ -80,7 +80,7 @@ func VersionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var auth domain.User
+	var auth models.User
 
 	err := json.NewDecoder(r.Body).Decode(&auth)
 	if err != nil {
@@ -107,7 +107,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var user domain.User
+	var user models.User
 
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -121,7 +121,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := io.AuthToken.StoreToken(domain.AuthTokenParams{User: getUser})
+	token, err := io.AuthToken.StoreToken(models.AuthTokenParams{User: getUser})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

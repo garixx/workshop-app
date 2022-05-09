@@ -2,45 +2,45 @@ package usecase
 
 import (
 	"errors"
-	"github.com/garixx/workshop-app/internal/domain"
+	"github.com/garixx/workshop-app/internal/models"
 	"time"
 )
 
 type AuthTokenUsecase struct {
-	userRepo domain.AuthTokenRepository
+	userRepo models.AuthTokenRepository
 }
 
-func NewAuthTokenUsecase(repo domain.AuthTokenRepository) domain.AuthTokenUsecase {
+func NewAuthTokenUsecase(repo models.AuthTokenRepository) models.AuthTokenUsecase {
 	return &AuthTokenUsecase{
 		userRepo: repo,
 	}
 }
 
-func (a AuthTokenUsecase) GenerateToken(user domain.User) (string, error) {
+func (a AuthTokenUsecase) GenerateToken(user models.User) (string, error) {
 	token := user.Login + "xxxxx"
 	return token, nil
 }
 
-func (a AuthTokenUsecase) IsExpired(token domain.AuthToken) bool {
+func (a AuthTokenUsecase) IsExpired(token models.AuthToken) bool {
 	if time.Now().After(token.CreatedAt.Add(time.Duration(token.ExpiredIn) * time.Second)) {
 		return true
 	}
 	return false
 }
 
-func (a AuthTokenUsecase) StoreToken(params domain.AuthTokenParams) (domain.AuthToken, error) {
+func (a AuthTokenUsecase) StoreToken(params models.AuthTokenParams) (models.AuthToken, error) {
 	// check defaults
 	if params.ExpireIn < 0 {
 		params.ExpireIn = 43200
 	}
 	generated, err := a.GenerateToken(params.User)
 	if err != nil {
-		return domain.AuthToken{}, errors.New("token generation failed")
+		return models.AuthToken{}, errors.New("token generation failed")
 	}
-	params.Token = domain.AuthToken{Token: generated}
+	params.Token = models.AuthToken{Token: generated}
 	return a.userRepo.StoreToken(params)
 }
 
-func (a AuthTokenUsecase) ValidateToken(token string) (domain.AuthToken, error) {
+func (a AuthTokenUsecase) ValidateToken(token string) (models.AuthToken, error) {
 	return a.userRepo.FetchToken(token)
 }
