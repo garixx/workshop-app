@@ -41,6 +41,6 @@ func (a AuthTokenUsecase) StoreToken(params domain.AuthTokenParams) (domain.Auth
 	return a.userRepo.StoreToken(params)
 }
 
-func (a AuthTokenUsecase) FetchToken(token string) (domain.AuthToken, error) {
+func (a AuthTokenUsecase) ValidateToken(token string) (domain.AuthToken, error) {
 	return a.userRepo.FetchToken(token)
 }

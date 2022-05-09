@@ -24,7 +24,7 @@ type RestFrontEnd struct {
 var io inventory.Inventory
 
 func (f RestFrontEnd) Start(ii inventory.Inventory) error {
-	log.Println("it's me, rest frontend")
+	log.Println("it's me, rest")
 	io = ii
 	r := mux.NewRouter()
 
@@ -67,7 +67,7 @@ func gracefulShutdown(srv *http.Server) {
 
 func VersionHandler(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("token")
-	if _, err := io.AuthToken.FetchToken(token); err != nil {
+	if _, err := io.AuthToken.ValidateToken(token); err != nil {
 		if errors.Is(err, repository.InvalidTokenError) {
 			http.Error(w, "invalid token", http.StatusBadRequest)
 			return

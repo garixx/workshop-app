@@ -2,6 +2,9 @@ package usecase
 
 import (
 	"github.com/garixx/workshop-app/internal/domain"
+	"github.com/garixx/workshop-app/internal/domain/mocks"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"testing"
 	"time"
 )
@@ -29,4 +32,53 @@ func TestAuthTokenUsecase_IsExpired(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestFetch(t *testing.T) {
+	mockTokenRepo := mocks.NewAuthTokenRepository(t)
+
+	expected := domain.AuthToken{
+		Login:     "me",
+		Token:     "mocktokene5w6",
+		CreatedAt: time.Now(),
+		ExpiredIn: 10,
+	}
+
+	mockTokenRepo.On("FetchToken", mock.AnythingOfType("string")).Return(expected, nil).Once()
+
+	tokenCase := NewAuthTokenUsecase(mockTokenRepo)
+	token, err := tokenCase.ValidateToken("mocktokene5w6")
+
+	assert.Equal(t, expected, token)
+	assert.NoError(t, err)
+}
+
+func TestStore(t *testing.T) {
+	mockTokenRepo := mocks.NewAuthTokenRepository(t)
+
+	payload := domain.AuthTokenParams{
+		User: domain.User{
+			Login: "aaa",
+		},
+		Token: domain.AuthToken{
+			Token: "xxx",
+		},
+		ExpireIn: 10,
+	}
+
+	expected := domain.AuthToken{
+		Login:     "aaa",
+		Token:     "aaaxxx",
+		CreatedAt: time.Now(),
+		ExpiredIn: 10,
+	}
+
+	//mockTokenRepo.On("StoreToken", mock.AnythingOfType("AuthTokenParams")).Return(expected, nil).Once()
+	mockTokenRepo.On("StoreToken", payload).Return(expected, nil).Once()
+
+	tokenCase := NewAuthTokenUsecase(mockTokenRepo)
+	token, err := tokenCase.StoreToken(payload)
+
+	assert.Equal(t, expected, token)
+	assert.NoError(t, err)
 }

@@ -10,7 +10,6 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.11.0
 	github.com/stretchr/testify v1.7.1
-	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 )
 
 require (
@@ -35,6 +34,7 @@ require (
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
 	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect

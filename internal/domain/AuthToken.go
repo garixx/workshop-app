@@ -19,7 +19,7 @@ type AuthTokenParams struct {
 
 type AuthTokenUsecase interface {
 	StoreToken(params AuthTokenParams) (AuthToken, error)
-	FetchToken(token string) (AuthToken, error)
+	ValidateToken(token string) (AuthToken, error)
 	GenerateToken(user User) (string, error)
 	IsExpired(token AuthToken) bool
 }

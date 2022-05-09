@@ -5,9 +5,9 @@ import (
 	tokenRepo "github.com/garixx/workshop-app/internal/authtoken/repository"
 	tokenCase "github.com/garixx/workshop-app/internal/authtoken/usecase"
 	"github.com/garixx/workshop-app/internal/config"
+	"github.com/garixx/workshop-app/internal/database"
 	"github.com/garixx/workshop-app/internal/delivery"
 	"github.com/garixx/workshop-app/internal/inventory"
-	"github.com/garixx/workshop-app/internal/user/repository"
 	userRepo "github.com/garixx/workshop-app/internal/user/repository"
 	userCase "github.com/garixx/workshop-app/internal/user/usecase"
 	"github.com/joho/godotenv"
@@ -26,7 +26,7 @@ func main() {
 		logrus.Fatalf("config parsing failed:%s", err.Error())
 	}
 
-	pool, err := repository.NewPostgresDB(config.GetPostgresDBConfig())
+	pool, err := database.NewPostgresDB(config.GetPostgresDBConfig())
 	if err != nil {
 		logrus.Fatalf("connect to DB failed:%s", err.Error())
 	}
@@ -42,11 +42,6 @@ func main() {
 		userUseCase,
 		tokenUseCase,
 	)
-
-	//i1 := inventory.Inventory{
-	//	User: userCase.NewUserUsecase(userRepository),
-	//	AuthToken: tokenCase.NewAuthTokenUsecase(authTokenRepository),
-	//}
 
 	err = delivery.RestFrontEnd{}.Start(*i)
 	if err != nil {
